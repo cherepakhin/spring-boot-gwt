@@ -22,7 +22,7 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 Ошибка [ERROR] Source level must be one of [auto, 1.8].
 ````
 
-Интерфейс некузявый, но __есть__ связь с Spring boot
+Интерфейс некузявый, но __есть__ связь с Spring boot. Это не совсем @SpringBootApplication ( [см. fr.ekito.gwt.server.ServerApplication](https://github.com/cherepakhin/spring-boot-gwt/blob/main/src/main/java/fr/ekito/gwt/server/ServerApplication.java))
 
 Оригинальный Readme.md:
 
