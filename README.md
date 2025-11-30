@@ -22,7 +22,67 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 Ошибка [ERROR] Source level must be one of [auto, 1.8].
 ````
 
-Интерфейс некузявый, но __есть__ связь с Spring boot. Это не совсем @SpringBootApplication ( [см. fr.ekito.gwt.server.ServerApplication](https://github.com/cherepakhin/spring-boot-gwt/blob/main/src/main/java/fr/ekito/gwt/server/ServerApplication.java))
+Интерфейс некузявый, но __есть__ связь с Spring boot. 
+Приложение инициализируется не как обычно через @SpringBootApplication, а через ( [см. fr.ekito.gwt.server.ServerApplication](https://github.com/cherepakhin/spring-boot-gwt/blob/main/src/main/java/fr/ekito/gwt/server/ServerApplication.java))
+
+````java
+@Configuration
+@EnableAutoConfiguration
+@ComponentScan("fr.ekito.gwt.server")
+public class ServerApplication {
+
+	final static Logger logger = LoggerFactory.getLogger(ServerApplication.class);
+
+	@Autowired
+	Environment env;
+
+	/**
+	 * entry point
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		SpringApplication.run(ServerApplication.class, args);
+	}
+	
+}
+````
+
+Связь frontend c backend:
+
+[fr.ekito.gwt.server.ServerApplication](https://github.com/cherepakhin/spring-boot-gwt/blob/main/src/main/java/fr/ekito/gwt/client.controller/WebAppController.java):
+
+````java
+protected void loadTodoList() {
+String pageBaseUrl = GWT.getHostPageBaseURL();
+// String baseUrl = GWT.getModuleBaseURL();
+RequestBuilder rb = new RequestBuilder(RequestBuilder.GET, pageBaseUrl + "/rest/todos/");
+rb.setCallback(new RequestCallback() {
+
+			public void onError(Request request, Throwable e) {
+				// some error handling code here
+				Window.alert("error = " + e.getMessage());
+			}
+
+			public void onResponseReceived(Request request, Response response) {
+				if (200 == response.getStatusCode()) {
+					String text = response.getText();
+					// some code to further handle the response here
+					System.out.println("text = " + text);
+					Window.alert("response = " + text);
+					List<Todo> todoList = JsonHelper.parseDataList(text);
+					reloadList(todoList);
+				}
+			}
+		});
+		try {
+			rb.send();
+		} catch (RequestException e) {
+			e.printStackTrace();
+			Window.alert("error = " + e.getMessage());
+		}
+	}
+````
 
 Оригинальный Readme.md:
 
